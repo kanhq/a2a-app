@@ -11,11 +11,44 @@
         </NuxtLink>
       </div>
     </template>
+    <template #end>
+
+      <Toolbar v-if="currentPath === '/'" :dt="toolBarTheme">
+        <template #start>
+          <Button icon="pi pi-file-plus" class="mr-2" severity="secondary" @click="emitEvent('new', $event)" text />
+          <Button icon=" pi pi-folder-open" class="mr-2" severity="secondary" @click="emitEvent('open', $event)" text />
+          <Button icon="pi pi-save" class="mr-2" severity="secondary" @click="emitEvent('save', $event)" text />
+          <Button icon="pi pi-trash" severity="secondary" @click="emitEvent('remove', $event)" text />
+        </template>
+
+        <!-- <template #center>
+          <IconField>
+            <InputIcon>
+              <i class="pi pi-search" />
+            </InputIcon>
+            <InputText placeholder="Search" />
+          </IconField>
+        </template> -->
+
+        <template #end>
+          <Button icon="pi pi-fw pi-bolt" class="mr-2" label="编写" severity="primary" @click="emitEvent('code', $event)"
+            v-tooltip="'用配置的大模型生成代码\n(Ctrl+Enter)'" />
+          <Button icon=" pi pi-fw pi-play" class="mr-2" label="运行" severity="primary"
+            @click="emitEvent('run', $event)" />
+          <Button icon=" pi pi-fw pi-server" class="mr-2" label="部署" severity="primary"
+            @click="emitEvent('deploy', $event)" />
+        </template>
+      </Toolbar>
+    </template>
   </Menubar>
 </template>
 
 
 <script setup lang="ts">
+import { emitEvent } from '~/composables/useEventBus';
+
+
+const router = useRouter();
 
 const menus = ref([
   { label: '应用开发', icon: 'pi pi-fw pi-code', to: '/' },
@@ -27,7 +60,7 @@ const menuBarTheme = ref({
   colorScheme: {
     light: {
       root: {
-        background: '{gray.300}',
+        background: '{gray.200}',
       },
       item: {
         focus: {
@@ -37,4 +70,21 @@ const menuBarTheme = ref({
     }
   }
 });
+
+const toolBarTheme = ref({
+  colorScheme: {
+    light: {
+      root: {
+        background: '{gray.200}',
+      },
+    }
+  }
+});
+
+const currentPath = ref(router.currentRoute.value.path);
+
+watch(() => router.currentRoute.value.path, (path) => {
+  currentPath.value = path;
+});
+
 </script>

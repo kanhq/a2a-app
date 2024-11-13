@@ -4,15 +4,20 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --host 0.0.0.0 --port 30012",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@guolao/vue-monaco-editor": "^1.5.4",
+    "@monaco-editor/loader": "^1.4.0",
     "@nuxtjs/tailwindcss": "^6.12.2",
+    "@primevue/forms": "^4.2.1",
     "@primevue/themes": "^4.2.1",
+    "dexie": "^4.0.9",
     "nuxt": "^3.14.159",
+    "openai": "^4.71.1",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.1",
     "tailwindcss-primeui": "^0.3.4",
