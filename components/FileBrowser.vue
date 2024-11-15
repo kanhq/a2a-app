@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, withDefaults } from 'vue';
+import { ref, onMounted } from 'vue';
 
 
 type FileItem = {
@@ -15,10 +15,8 @@ type FileItem = {
 const searchQuery = ref('');
 const files = ref<FileItem[]>([]);
 
-const props = withDefaults(defineProps<{
-  prefix?: string;
-}>(), {
-  prefix: '/projects/',
+const props = defineProps({
+  prefix: { default: '/projects' },
 });
 
 const emit = defineEmits<{
