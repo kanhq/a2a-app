@@ -20,9 +20,14 @@ jobs:
         bun-version: latest
     - run: bun install
     - run: bun run generate      
+    - name: Packing
+      run: tar czf ../a2a-app.tar.gz *
+      working-directory: .output/public
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
-        files: .output/*
+        files: .output/*.gz
+        make_latest: true
+        body_path: ./CHANGELOG.md
       
       
