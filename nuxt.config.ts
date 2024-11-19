@@ -6,6 +6,26 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
 
+  runtimeConfig: {
+    public: {
+      monacoCdn: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs',
+    }
+  },
+
+
+  app: {
+    head: {
+      title: 'A2A Workshop',
+    },
+  },
+  css: [
+    '~/assets/css/tailwind.css',
+    'primeicons/primeicons.css',
+    '~/assets/css/main.css',
+  ],
+
+  logLevel: 'verbose',
+
   modules: ["@primevue/nuxt-module", '@nuxtjs/tailwindcss'],
   primevue: {
     autoImport: true,
@@ -13,7 +33,7 @@ export default defineNuxtConfig({
       theme: {
         preset: Aura
       }
-    }
+    },
+    loadStyles: false
   },
-  css: ['~/assets/css/tailwind.css', 'primeicons/primeicons.css', '~/assets/css/main.css'],
 })

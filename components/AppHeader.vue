@@ -15,10 +15,11 @@
 
       <Toolbar v-if="currentPath === '/'" :dt="toolBarTheme">
         <template #start>
-          <Button icon="pi pi-file-plus" class="mr-2" severity="secondary" @click="emitEvent('new', $event)" text />
-          <Button icon=" pi pi-folder-open" class="mr-2" severity="secondary" @click="emitEvent('open', $event)" text />
-          <Button icon="pi pi-save" class="mr-2" severity="secondary" @click="emitEvent('save', $event)" text />
-          <Button icon="pi pi-trash" severity="secondary" @click="emitEvent('remove', $event)" text />
+          <Button icon="pi pi-file-plus" class="mr-2" severity="help" text raised @click="emitEvent('new', $event)" />
+          <Button icon=" pi pi-folder-open" class="mr-2" severity="help" text raised
+            @click="emitEvent('open', $event)" />
+          <Button icon="pi pi-save" class="mr-2" severity="help" text raised @click="emitEvent('save', $event)" />
+          <Button icon="pi pi-trash" severity="help" text raised @click="emitEvent('remove', $event)" />
         </template>
 
         <!-- <template #center>
@@ -31,11 +32,11 @@
         </template> -->
 
         <template #end>
-          <Button icon="pi pi-fw pi-bolt" class="mr-2" label="编写" severity="primary" @click="emitEvent('code', $event)"
-            v-tooltip="'用配置的大模型生成代码\n(Ctrl+Enter)'" />
-          <Button icon=" pi pi-fw pi-play" class="mr-2" label="运行" severity="primary"
+          <Button icon="pi pi-fw pi-bolt" class="mr-2" label="编写" severity="primary" raised
+            @click="emitEvent('code', $event)" v-tooltip="'用配置的大模型生成代码\n(Ctrl+Enter)'" />
+          <Button icon=" pi pi-fw pi-play" class="mr-2" label="运行" raised severity="primary"
             @click="emitEvent('run', $event)" />
-          <Button icon=" pi pi-fw pi-server" class="mr-2" label="部署" severity="primary"
+          <Button icon=" pi pi-fw pi-server" class="mr-2" label="部署" raised severity="primary"
             @click="emitEvent('deploy', $event)" />
         </template>
       </Toolbar>
@@ -60,7 +61,7 @@ const menuBarTheme = ref({
   colorScheme: {
     light: {
       root: {
-        background: '{gray.200}',
+        background: '{surface.100}',
       },
       item: {
         focus: {
@@ -75,7 +76,7 @@ const toolBarTheme = ref({
   colorScheme: {
     light: {
       root: {
-        background: '{gray.200}',
+        background: '{surface.100}',
       },
     }
   }

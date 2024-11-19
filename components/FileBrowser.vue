@@ -31,7 +31,7 @@ onMounted(async () => {
   files.value = names.map(name => ({
     fullPath: name,
     name: trimPrefix(name, props.prefix),
-  })).filter(file => !file.name.startsWith('untitled'))
+  })).filter(file => !file.name.startsWith('/untitled'))
 });
 
 function onListChanged(event: any) {

@@ -1,14 +1,15 @@
 <template>
   <div class="w-full h-full  bg-gray-100 flex">
-
-    <div class="flex-1 border-2 m-2 border-solid border-gray-300">
-      <VueMonacoEditor v-model:value="doc.prompt" theme="vs-light" language="markdown" :options="promptEditorOptions"
-        @mount="handlePromptEditorMount" @change='onFileSave(true)' />
-    </div>
-    <div class="flex-1 border-2 m-2  border-solid  border-gray-300">
-      <VueMonacoEditor v-model:value="doc.source" language="javascript" :options="sourceEditorOptions"
-        @mount="handleSourceEditorMount" />
-    </div>
+    <ClientOnly>
+      <div class="flex-1 border-2 m-2 border-solid border-gray-300">
+        <VueMonacoEditor v-model:value="doc.prompt" theme="vs-light" language="markdown" :options="promptEditorOptions"
+          @mount="handlePromptEditorMount" @change='onFileSave(true)' />
+      </div>
+      <div class="flex-1 border-2 m-2  border-solid  border-gray-300">
+        <VueMonacoEditor v-model:value="doc.source" language="javascript" :options="sourceEditorOptions"
+          @mount="handleSourceEditorMount" />
+      </div>
+    </ClientOnly>
   </div>
   <ConfirmDialog />
   <ConfirmDialog group="inputRequired">
@@ -28,7 +29,6 @@
 
 import { ref, shallowRef } from 'vue'
 import type { editor as MonacoEditor } from 'monaco-editor'
-import { KeyCode, KeyMod } from 'monaco-editor'
 import sysPrompt from '~/assets/data/code.md?raw'
 
 const promptEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
@@ -56,12 +56,22 @@ const sourceEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
 const promptEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
 const sourceEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
 const handlePromptEditorMount = (editor: MonacoEditor.IStandaloneCodeEditor) => {
+
+  //console.log('handlePromptEditorMount, ', KeyMod.CtrlCmd, KeyMod.Shift, KeyMod.Alt, KeyMod.WinCtrl)
   editor.addAction({
     id: 'a2a-code',
     label: '编写代码',
-    keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
+    keybindings: [MonacoKeys.KeyModCtrlCmd | MonacoKeys.Enter],
     run: () => generateCode(),
   })
+
+  editor.addAction({
+    id: 'a2a-save',
+    label: '保存文件',
+    keybindings: [MonacoKeys.KeyModCtrlCmd | MonacoKeys.KeyS],
+    run: () => onFileSave(),
+  })
+
   promptEditor.value = editor
 }
 const handleSourceEditorMount = (editorInstance: any) => (sourceEditor.value = editorInstance)
