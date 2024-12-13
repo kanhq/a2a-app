@@ -1,6 +1,6 @@
 
 
-export type AppCommands = 'code' | 'run' | 'deploy' | 'open' | 'save' | 'new' | 'remove' | ''
+export type AppCommands = 'code' | 'run' | 'runDirect' | 'deploy' | 'open' | 'save' | 'new' | 'remove' | ''
 
 export type AppCommand = {
   command: AppCommands,

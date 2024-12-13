@@ -38,7 +38,8 @@ class LlmService {
       ],
       stream: true,
     });
-
+    const prefix = `// writing by provider: ${gateway.model?.provider || ''} model: ${gateway.model?.model || ''}`
+    yield prefix
     for await (const chunk of stream) {
       if (chunk.choices && chunk.choices.length > 0) {
         const s = chunk.choices[0].delta?.content

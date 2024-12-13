@@ -5,6 +5,7 @@ You are requested to write some javascript code for use's logic based on the API
   - 'params': which is an object that contains the parameters of the application.
 - the `main` function should return the result of the last action.
 - You should not use any other libraries, just vanilla javascript.
+- there script will be excute on a custom runtime, there is no `Window` or `Global` object, so you should not call any function provide by that. 
 - You should use `async/await` for the API calls.
 - Read the comments in the API documentation carefully.
 - All the API results had parsed to a JSON object.
@@ -15,7 +16,15 @@ You are requested to write some javascript code for use's logic based on the API
 the API documentation is as follows, even though it is in typescript, you should write the code in javascript.
 
 ```typescript
-export type ActionKind = "http" | "sql" | "file" | "email" | "shell" | "llm";
+export type ActionKind =
+  | "http"
+  | "sql"
+  | "file"
+  | "email"
+  | "shell"
+  | "llm"
+  | "notify"
+  | "enc";
 
 /** The base action type, all Action had these fields */
 export type BaseAction = {
@@ -162,6 +171,67 @@ export type LlmAction = {
 
 type LLMResult = any;
 
+/** Notify action
+ *
+ * this action is used to send through the IM service, such as slack, telegram, dingtalk, feishu, wxwork etc.
+ * notify action is used to send through the IM service, such as slack, telegram, dingtalk, feishu, wxwork etc.
+ * usually there is a webhook url used to send the message.
+ * message can be string or object,
+ * when it is object, it should match the format of the IM service.
+ * when it is string, it will be sent as text message type of the IM service, text can be markdown or plain text.
+ */
+export type NotifyAction = {
+  /** the webhook url */
+  url: any;
+  /** the message to be sent */
+  message?: any;
+  /** optional title of this message */
+  title?: string;
+} & BaseAction;
+
+type NotifyResult = any;
+
+/**
+ * Enc action
+ * 
+ * this action is used to do crypto/encoding transform
+ */
+
+export type EncAction = {
+  /** is this action encrypt/encoing or dencrypt/decoding  */
+  isDec?: boolean
+  /** chan of transfrom to perform, you are preferred to combine multiple enc task in one action.
+   * each methed can be one of:
+   * - base64 : base64 encoding/decoding
+   * - hex : hex encoding/decoding
+   * - url : url encoding/decoding
+   * - md5 : calculate the md5 checksum of data
+   * - sha1 : calculate the sha1 checksum of data
+   * - sha256: calculate the sha256 checksum of data
+   * - sha1prng: calculate the sha1prgn checksum of data
+   * - hmac_md5: calculate the hmac md5 sign
+   * - hmac_sha1: calculate the hmac sha1 sign
+   * - hmac_sha256: calculate the hmac sha256 sign
+   * - aes_ecb: do AES ECB encrypt/dencrypt
+   * - aes_cbc: do AES CBC encrypt/dencrypt
+   */
+  methods: string[]
+  /** key used wen do hmac and aes */
+  key?: string
+  /** padding method when do AES encrypt/decnrypt, can be one of
+   * - zero: padding with zero
+   * - space: padding with space
+   * - pkcs5: padding as pkcs5 method
+   * - pkcs7: padding as pkcs7 method
+   */
+  padding?: string
+  /** data used to perform */
+  data: string
+} & BaseAction;
+
+type EncResult = string;
+
+
 /** do http action
  *
  *
@@ -225,4 +295,22 @@ declare function doAction(action: ShellAction): Promise<ShellResult>;
  * @returns the result of the action, the result is the stdout of the command
  */
 declare function doAction(action: LlmAction): Promise<LlmResult>;
+
+/**
+ * do notify action
+ *
+ *
+ * @param action the notify action to perform
+ * @returns the result of the action, the result is the stdout of the command
+ */
+declare function doAction(action: NotifyAction): Promise<NotifyResult>;
+
+/**
+ * do enc action
+ *
+ *
+ * @param action the enc action to perform
+ * @returns the result of the action, the result is the stdout of the command
+ */
+declare function doAction(action: EncAction): Promise<EncResult>;
 ```

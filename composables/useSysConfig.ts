@@ -26,6 +26,13 @@ export type SysConfig = {
   project: ProjectConfig
 }
 
+export type A2APoject = {
+  name: string
+  prompt: string
+  source: string
+  params: any 
+}
+
 export const UNTITLED_PROJECT = '/projects/untitled.json'
 
 class SysConfigService {

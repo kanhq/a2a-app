@@ -1,13 +1,17 @@
 <template>
   <div class="w-full h-full  bg-gray-100 flex">
     <ClientOnly>
-      <div class="flex-1 border-2 m-2 border-solid border-gray-300">
+      <div class="basis-4/12 border-2 m-2 border-solid border-gray-300">
         <VueMonacoEditor v-model:value="doc.prompt" theme="vs-light" language="markdown" :options="promptEditorOptions"
           @mount="handlePromptEditorMount" @change='onFileSave(true)' />
       </div>
-      <div class="flex-1 border-2 m-2  border-solid  border-gray-300">
+      <div class="basis-5/12 border-2 m-2  border-solid  border-gray-300">
         <VueMonacoEditor v-model:value="doc.source" language="javascript" :options="sourceEditorOptions"
           @mount="handleSourceEditorMount" />
+      </div>
+      <div class="basis-3/12 border-2 m-2  border-solid  border-gray-300">
+        <VueMonacoEditor v-model:value="runResult" language="json" :options="outputEditorOptions"
+          @mount="handleOutputEditorMount" />
       </div>
     </ClientOnly>
   </div>
@@ -17,6 +21,13 @@
       <div class="flex flex-col w-[300px] gap-4">
         <div class="">{{ slotProps.message.message }}</div>
         <InputText v-model="inputDlgResult" class="w-full" />
+      </div>
+    </template>
+  </ConfirmDialog>
+  <ConfirmDialog group="runConfirm">
+    <template #message>
+      <div class="w-[700px]">
+        <RunOptions v-model="doc.params" />
       </div>
     </template>
   </ConfirmDialog>
@@ -35,6 +46,9 @@ const promptEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
   formatOnType: true,
   formatOnPaste: true,
+  wordWrap: 'on',
+  // fontSize: 9,
+  // lineHeight: 20,
   minimap: {
     enabled: false,
   },
@@ -46,6 +60,9 @@ const sourceEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
   formatOnType: true,
   formatOnPaste: true,
+  wordWrap: 'on',
+  // fontSize: 10,
+  // lineHeight:20,
   minimap: {
     enabled: false,
   },
@@ -53,8 +70,22 @@ const sourceEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
   placeholder: '点击上面的<编写>按钮来生成应用代码',
   language: 'javascript',
 }
+
+const outputEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
+  automaticLayout: true,
+  formatOnType: true,
+  formatOnPaste: true,
+  wordWrap: 'on',
+  minimap: {
+    enabled: false,
+  },
+  readOnly: true,
+  placeholder: '运行结果',
+  language: 'json',
+}
 const promptEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
 const sourceEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
+const outputEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
 const handlePromptEditorMount = (editor: MonacoEditor.IStandaloneCodeEditor) => {
 
   //console.log('handlePromptEditorMount, ', KeyMod.CtrlCmd, KeyMod.Shift, KeyMod.Alt, KeyMod.WinCtrl)
@@ -72,41 +103,49 @@ const handlePromptEditorMount = (editor: MonacoEditor.IStandaloneCodeEditor) => 
     run: () => onFileSave(),
   })
 
+  editor.addAction({
+    id: 'a2a-run',
+    label: '运行',
+    keybindings: [MonacoKeys.KeyModCtrlCmd | MonacoKeys.KeyR],
+    run: () => onRunDirect(),
+  })
+
   promptEditor.value = editor
 }
 const handleSourceEditorMount = (editorInstance: any) => (sourceEditor.value = editorInstance)
+const handleOutputEditorMount = (editorInstance: any) => (outputEditor.value = editorInstance)
 
 
-const doc = ref<{
-  name: string
-  prompt: string
-  source: string
-}>({
+const doc = ref<A2APoject>({
   name: UNTITLED_PROJECT,
   prompt: '',
   source: '',
+  params: {},
 })
 
 const fileBrowser = ref()
 
 const inputDlgResult = ref('')
+const runResult = ref('')
 
 const eventBus = useEventBus()
 const sysConfig = useSysConfig()
 const confirm = useConfirm();
 const llm = useLlm()
+const config = useConfig()
 const toast = useToast()
-
-
-// your action
-function formatCode() {
-  promptEditor.value?.getAction('editor.action.formatDocument')?.run()
-}
+const a2a = useA2a()
 
 watch(eventBus, async (event) => {
   switch (event.command) {
     case 'code':
       await generateCode()
+      break
+    case 'run':
+      await onRun()
+      break
+    case 'runDirect':
+      await onRunDirect()
       break
     case 'open':
       await onFileOpen(event.payload, event.event)
@@ -115,7 +154,7 @@ watch(eventBus, async (event) => {
       await onFileSave()
       break
     case 'new':
-      doc.value = { name: UNTITLED_PROJECT, prompt: '', source: '' }
+      doc.value = { name: UNTITLED_PROJECT, prompt: '', source: '', params: {} }
       await onFileSave()
       break
   }
@@ -129,16 +168,28 @@ onMounted(async () => {
       name: name,
       prompt: data.prompt,
       source: data.source,
+      params: data.params,
     }
   }
 })
 
+onBeforeUnmount(async () => {
+  await onFileSave(true)
+  sysConfig.value.saveSysConfig()
+})
 
 function extractCode(code: string) {
   // only extract the code block from the markdown
 
   let startPos = code.indexOf('```', 0)
   if (startPos >= 0) {
+
+    let prefix = code.substring(0, startPos).split('\n').filter((line) => line.startsWith('//')).join('\n')
+    //console.log({ code, prefix})
+    if (prefix.trim() !== '') {
+      prefix += '\n\n'
+    }
+
     startPos = code.indexOf('\n', startPos)
     if (startPos < 0) {
       return ''
@@ -146,9 +197,9 @@ function extractCode(code: string) {
     startPos += 1
     const endPos = code.indexOf('```', startPos)
     if (endPos < startPos) {
-      return code.substring(startPos)
+      return prefix + code.substring(startPos)
     } else {
-      return code.substring(startPos, endPos)
+      return prefix +  code.substring(startPos, endPos)
     }
   }
   return ''
@@ -191,6 +242,7 @@ async function generateCode() {
   let start = false
   let code = ''
   for await (const part of llm.value.generateCode(doc.value.prompt, sysPrompt, gateway)) {
+    //console.log('part', part)
     if (!start) {
       code = part
       start = true
@@ -199,6 +251,12 @@ async function generateCode() {
     }
     doc.value.source = extractCode(code)
   }
+  toast.add({
+    severity: 'success',
+    summary: '代码生成成功',
+    detail: '您可以点击<运行>按钮来运行代码',
+    life: 3000,
+  })
 }
 
 async function onFileOpen(name: string, event: any) {
@@ -216,8 +274,10 @@ async function onFileOpen(name: string, event: any) {
       name: name,
       prompt: data.prompt,
       source: data.source,
+      params: data.params,
     }
   }
+  sysConfig.value.project.lastProjectName = name
 }
 
 async function onFileSelected(file: any) {
@@ -250,6 +310,7 @@ async function onFileSave(autoSave = false) {
         await saveFile(doc.value.name, {
           prompt: doc.value.prompt,
           source: doc.value.source,
+          params: toRaw(doc.value.params),
         })
       },
       reject: () => {
@@ -259,9 +320,62 @@ async function onFileSave(autoSave = false) {
     await saveFile(doc.value.name, {
       prompt: doc.value.prompt,
       source: doc.value.source,
+      params: toRaw(doc.value.params),
     })
   }
 }
 
+async function onRun() {
+  confirm.require({
+    group: 'runConfirm',
+    message: '请选择运行参数',
+    header: '运行确认',
+    icon: 'pi pi-exclamation-triangle',
+    rejectProps: {
+      label: '取消',
+      severity: 'secondary',
+      outlined: true
+    },
+    acceptProps: {
+      label: '确定'
+    },
+    accept: onRunDirect,
+    reject: () => {
+    }
+  });
+}
+
+async function onRunDirect() {
+  const gateway = sysConfig.value.a2a
+  if (!gateway.url) {
+    confirm.require({
+      message: 'A2A配置不完整，请先配置A2A',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      rejectProps: {
+        label: '取消',
+        severity: 'secondary',
+        outlined: true
+      },
+      acceptProps: {
+        label: '去配置'
+      },
+      accept: () => {
+        useRouter().push({ name: 'settings' })
+      },
+      reject: () => {
+      }
+    });
+    return
+  }
+  let req = {
+    script: toRaw(doc.value.source),
+    config: await config.value.mergeConfigs(),
+    params: toRaw(doc.value.params),
+  }
+  const resp = await a2a.value.runJSON(req, gateway)
+
+  runResult.value = JSON.stringify(resp, null, 2)
+}
 
 </script>
