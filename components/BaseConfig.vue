@@ -75,8 +75,9 @@ onMounted(async () => {
 async function loadRows() {
   const fileName = `/config/${props.config.name}.json`
   const data = (await loadFileContent(fileName)) as any[] || []
-  if (props.config.deserialize) {
-    rows.value = data.map(props.config.deserialize)
+  const deSerFunc = props.config.deserialize
+  if (deSerFunc) {
+    rows.value = data.map(r => deSerFunc(r, props.config))
   } else {
     rows.value = data
   }
@@ -84,7 +85,11 @@ async function loadRows() {
 
 async function saveRows() {
   const fileName = `/config/${props.config.name}.json`
-  const data = props.config.serialize ? rows.value.map(props.config.serialize) : rows.value.map(toRaw)
+  const serFunc = props.config.serialize
+  let data = rows.value.map(toRaw)
+  if (serFunc) {
+    data = data.map(r => serFunc(r, props.config))
+  }
   console.log('saveRows', fileName, data)
   await saveFile(fileName, toRaw(data))
 }

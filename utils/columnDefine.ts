@@ -23,6 +23,8 @@ export type ActionConfig = {
   icon?: string
   columns: ActionColumnDefine[]
 
-  serialize?: (data: any) => any
-  deserialize?: (data: any) => any
+  serialize?: (data: any, _this?: any) => any
+  deserialize?: (data: any, _this?: any) => any
+
+  [key: string]: any
 };

@@ -54,13 +54,80 @@ const ossConf: ActionConfig = {
   name: 'oss',
   columns: [
     { field: 'name', label: '名称', style: "width:9rem" },
-    { field: 'kind', label: '服务商', style: "width:9rem" },
+    {
+      field: 'kind', label: '服务商', style: "width:9rem",
+      options: [
+        { label: '阿里云OSS', value: 'oss' },
+        { label: 'AWS S3', value: 's3' },
+      ]
+    },
     { field: 'bucket', label: 'Bucket', style: "width:9rem" },
     { field: 'endpoint', label: '接入点', style: "width:9rem" },
     { field: 'user', label: '用户名', style: "width:9rem" },
     { field: 'password', label: '密码', style: "width:9rem" },
   ],
   //TODO: serialize/deserialize
+  serialize: (row: any, _this?: any) => {
+    const func = _this[row.kind]
+    if (func) {
+      return func(true, row)
+    } else {
+      return row
+    }
+  },
+
+  deserialize: (row: any, _this?: any) => {
+    const func = _this[row.kind]
+    if (func) {
+      return func(false, row)
+    } else {
+      return row
+    }
+  },
+
+  oss: function (ser: boolean, row: any) {
+    if (ser) {
+      return {
+        endpoint: row.endpoint,
+        bucket: row.bucket,
+        access_key_id: row.user,
+        access_key_secret: row.password,
+        name: row.name,
+        kind: row.kind,
+      }
+    } else {
+      return {
+        endpoint: row.endpoint,
+        bucket: row.bucket,
+        user: row.access_key_id,
+        password: row.access_key_secret,
+        name: row.name,
+        kind: row.kind,
+      }
+    }
+  },
+
+  s3: function (ser: boolean, row: any) {
+    if (ser) {
+      return {
+        endpoint: row.endpoint,
+        bucket: row.bucket,
+        access_key_id: row.user,
+        access_key_secret: row.password,
+        name: row.name,
+        kind: row.kind,
+      }
+    } else {
+      return {
+        endpoint: row.endpoint,
+        bucket: row.bucket,
+        user: row.access_key_id,
+        password: row.access_key_secret,
+        name: row.name,
+        kind: row.kind,
+      }
+    }
+  },
 }
 
 const mailConf: ActionConfig = {
@@ -156,8 +223,8 @@ class ConfigService {
     return allConfigSchemas
   }
 
-  async mergeConfigs() : Promise<any> {
-    let configs : any = {}
+  async mergeConfigs(): Promise<any> {
+    let configs: any = {}
     for (const schema of allConfigSchemas) {
       const fileName = `/config/${schema.name}.json`
       const rows = await loadFileContent(fileName) as any[] || []
@@ -165,7 +232,7 @@ class ConfigService {
         for (const row of rows) {
           configs[row.name] = row.value
         }
-      }else{
+      } else {
         for (const row of rows) {
           const key = row.name
           delete row.name
