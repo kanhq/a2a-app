@@ -155,7 +155,7 @@ watch(eventBus, async (event) => {
       break
     case 'new':
       doc.value = { name: UNTITLED_PROJECT, prompt: '', source: '', params: {} }
-      await onFileSave()
+      await onFileSave(true)
       break
   }
 })
@@ -175,7 +175,6 @@ onMounted(async () => {
 
 onBeforeUnmount(async () => {
   await onFileSave(true)
-  sysConfig.value.saveSysConfig()
 })
 
 function extractCode(code: string) {
@@ -199,7 +198,7 @@ function extractCode(code: string) {
     if (endPos < startPos) {
       return prefix + code.substring(startPos)
     } else {
-      return prefix +  code.substring(startPos, endPos)
+      return prefix + code.substring(startPos, endPos)
     }
   }
   return ''
@@ -323,6 +322,8 @@ async function onFileSave(autoSave = false) {
       params: toRaw(doc.value.params),
     })
   }
+  sysConfig.value.project.lastProjectName = doc.value.name
+  sysConfig.value.saveSysConfig()
 }
 
 async function onRun() {
