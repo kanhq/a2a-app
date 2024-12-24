@@ -37,9 +37,13 @@ class LlmService {
         { role: 'user', content: prompt }
       ],
       stream: true,
+      stream_options: {
+        include_usage: true
+      },
     });
-    const prefix = `// writing by provider: ${gateway.model?.provider || ''} model: ${gateway.model?.model || ''}`
+    const prefix = `// Written by Provider: ${gateway.model?.provider || ''} Model: ${gateway.model?.model || ''}`
     yield prefix
+    let usage = null
     for await (const chunk of stream) {
       if (chunk.choices && chunk.choices.length > 0) {
         const s = chunk.choices[0].delta?.content
@@ -47,6 +51,14 @@ class LlmService {
           yield s
         }
       }
+      if (chunk.usage) {
+        usage = chunk.usage
+      }
+    }
+    if (usage) {
+      const s = `//usage: ${JSON.stringify(usage)}`
+      console.log(s)
+      yield s
     }
   }
 

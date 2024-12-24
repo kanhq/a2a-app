@@ -177,13 +177,17 @@ onBeforeUnmount(async () => {
   await onFileSave(true)
 })
 
-function extractCode(code: string) {
+function extractCode(code: string, usage: any) {
   // only extract the code block from the markdown
 
   let startPos = code.indexOf('```', 0)
   if (startPos >= 0) {
 
     let prefix = code.substring(0, startPos).split('\n').filter((line) => line.startsWith('//')).join('\n')
+    if (usage) {
+      prefix += `\n// PromptTokens: ${usage.prompt_tokens} CompletionTokens: ${usage.completion_tokens}`
+    }
+
     //console.log({ code, prefix})
     if (prefix.trim() !== '') {
       prefix += '\n\n'
@@ -240,15 +244,19 @@ async function generateCode() {
   doc.value.source = '// 正在生成代码，请稍等...'
   let start = false
   let code = ''
+  let usage = null
   for await (const part of llm.value.generateCode(doc.value.prompt, sysPrompt, gateway)) {
-    //console.log('part', part)
-    if (!start) {
-      code = part
-      start = true
+    if (part.startsWith('//usage:')) {
+      usage = JSON.parse(part.substring(8))
     } else {
-      code += part
+      if (!start) {
+        code = part
+        start = true
+      } else {
+        code += part
+      }
     }
-    doc.value.source = extractCode(code)
+    doc.value.source = extractCode(code, usage)
   }
   toast.add({
     severity: 'success',

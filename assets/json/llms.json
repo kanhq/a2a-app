@@ -146,6 +146,10 @@
       {
         "provider": "xai",
         "model": "grok-beta"
+      },
+      {
+        "provider": "xai",
+        "model": "grok-2"
       }
     ]
   },
