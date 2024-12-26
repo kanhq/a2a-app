@@ -140,15 +140,15 @@
     ]
   },
   {
-    "name": "xai",
-    "desc": "XAi",
+    "name": "x-ai",
+    "desc": "xAI",
     "models": [
       {
-        "provider": "xai",
+        "provider": "x-ai",
         "model": "grok-beta"
       },
       {
-        "provider": "xai",
+        "provider": "x-ai",
         "model": "grok-2"
       }
     ]

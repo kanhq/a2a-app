@@ -30,6 +30,7 @@ class LlmService {
       }
     });
 
+    let t1 = Date.now()
     const stream = await client.chat.completions.create({
       model: gateway.model?.model || '',
       messages: [
@@ -43,7 +44,7 @@ class LlmService {
     });
     const prefix = `// Written by Provider: ${gateway.model?.provider || ''} Model: ${gateway.model?.model || ''}`
     yield prefix
-    let usage = null
+    let usage: any = null
     for await (const chunk of stream) {
       if (chunk.choices && chunk.choices.length > 0) {
         const s = chunk.choices[0].delta?.content
@@ -53,11 +54,11 @@ class LlmService {
       }
       if (chunk.usage) {
         usage = chunk.usage
+        usage.time_used = ((Date.now() - t1) / 1000).toFixed(2)
       }
     }
     if (usage) {
       const s = `//usage: ${JSON.stringify(usage)}`
-      console.log(s)
       yield s
     }
   }

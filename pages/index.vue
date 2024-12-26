@@ -185,7 +185,7 @@ function extractCode(code: string, usage: any) {
 
     let prefix = code.substring(0, startPos).split('\n').filter((line) => line.startsWith('//')).join('\n')
     if (usage) {
-      prefix += `\n// PromptTokens: ${usage.prompt_tokens} CompletionTokens: ${usage.completion_tokens}`
+      prefix += `\n// PromptTokens: ${usage.prompt_tokens} CompletionTokens: ${usage.completion_tokens} TimeUsed: ${usage.time_used}`
     }
 
     //console.log({ code, prefix})
@@ -338,7 +338,7 @@ async function onRun() {
   confirm.require({
     group: 'runConfirm',
     message: '请选择运行参数',
-    header: '运行确认',
+    header: '设置运行参数 params',
     icon: 'pi pi-exclamation-triangle',
     rejectProps: {
       label: '取消',
