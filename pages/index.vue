@@ -130,7 +130,6 @@ const runResult = ref('')
 const eventBus = useEventBus()
 const sysConfig = useSysConfig()
 const confirm = useConfirm();
-const llm = useLlm()
 const config = useConfig()
 const toast = useToast()
 const a2a = useA2a()
