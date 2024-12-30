@@ -14,6 +14,7 @@ export type LlmGateway = {
 export type A2AConfig = {
   url: string
   token: string
+  model?: LlmModel
 }
 
 export type ProjectConfig = {
@@ -21,7 +22,7 @@ export type ProjectConfig = {
 }
 
 export type SysConfig = {
-  llm: LlmGateway
+  //llm: LlmGateway
   a2a: A2AConfig
   project: ProjectConfig
 }
@@ -30,7 +31,7 @@ export type A2APoject = {
   name: string
   prompt: string
   source: string
-  params: any 
+  params: any
 }
 
 export const UNTITLED_PROJECT = '/projects/untitled.json'
@@ -41,10 +42,10 @@ class SysConfigService {
 
   constructor() {
     this.sysConfig = {
-      llm: {
-        url: '',
-        token: ''
-      },
+      // llm: {
+      //   url: '',
+      //   token: ''
+      // },
       a2a: {
         url: '',
         token: ''
@@ -59,13 +60,13 @@ class SysConfigService {
     this.loadSysConfig()
   }
 
-  set llm(conf: LlmGateway) {
-    this.sysConfig.llm = conf
-    this.saveSysConfig()
-  }
-  get llm() {
-    return this.sysConfig.llm
-  }
+  // set llm(conf: LlmGateway) {
+  //   this.sysConfig.llm = conf
+  //   this.saveSysConfig()
+  // }
+  // get llm() {
+  //   return this.sysConfig.llm
+  // }
 
   set a2a(conf: A2AConfig) {
     this.sysConfig.a2a = conf
@@ -95,7 +96,7 @@ class SysConfigService {
   }
 
   saveSysConfig() {
-    console.log('saving sysConfig')
+    console.log('saving sysConfig', this.sysConfig)
     localStorage.setItem('sysConfig', JSON.stringify(this.sysConfig))
   }
 }

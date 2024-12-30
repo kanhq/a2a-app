@@ -80,8 +80,13 @@ export type SqlResult = any[];
 
 /** File action */
 export type File = {
-  // the action to perform
-  method: "READ" | "WRITE" | "APPEND";
+  /** the action to perform
+   * - READ : read the file content
+   * - WRITE : write the file content
+   * - APPEND : append the file content
+   * - LIST : list the file in the directory
+   */
+  method: "READ" | "WRITE" | "APPEND" | "LIST";
   /** the path/url of the file
    * it can be a local file path or a remote storage url like s3, blob, aliyun oss, etc.
    *
@@ -108,6 +113,12 @@ export type File = {
 /** File action result
  *
  * the result had been parsed to object with the mimetype mapping to the file extension or the mimetype specified in the action.
+ * for "LIST" method, the result is a array file info object with the following fields:
+ * - 'name' : the file name
+ * - 'path' : the file path
+ * - 'size' : the file size
+ * - 'isDir' : whether it is a directory
+ * - 'lastModified' : the last modified time
  */
 export type FileResult = any;
 

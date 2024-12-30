@@ -40,7 +40,6 @@
 
 import { ref, shallowRef } from 'vue'
 import type { editor as MonacoEditor } from 'monaco-editor'
-import sysPrompt from '~/assets/data/code.md?raw'
 
 const promptEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
@@ -209,8 +208,8 @@ function extractCode(code: string, usage: any) {
 }
 
 async function generateCode() {
-  const gateway = sysConfig.value.llm;
-  if (!gateway?.url || !gateway?.token || !gateway.model?.model || !gateway.model?.provider) {
+  const gateway = sysConfig.value.a2a;
+  if (!gateway?.url || !gateway.model?.model || !gateway.model?.provider) {
 
     confirm.require({
       message: '大模型配置不完整，请先配置大模型',
@@ -230,6 +229,7 @@ async function generateCode() {
       reject: () => {
       }
     });
+    return
   }
   if (doc.value.prompt.trim() === '') {
     toast.add({
@@ -245,7 +245,14 @@ async function generateCode() {
   let start = false
   let code = ''
   let usage = null
-  for await (const part of llm.value.generateCode(doc.value.prompt, sysPrompt, gateway)) {
+  let req = {
+    provider: gateway.model?.provider || '',
+    model: gateway.model?.model || '',
+    prompt: doc.value.prompt,
+    name: doc.value.name,
+  }
+
+  for await (const part of a2a.value.writeCode(req, sysConfig.value.a2a)) {
     if (part.startsWith('//usage:')) {
       usage = JSON.parse(part.substring(8))
     } else {
