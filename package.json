@@ -17,7 +17,7 @@
     "@primevue/forms": "^4.2.5",
     "@primevue/themes": "^4.2.5",
     "dexie": "^4.0.10",
-    "nuxt": "^3.14.1592",
+    "nuxt": "^3.15.0",
     "openai": "^4.77.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.5",
