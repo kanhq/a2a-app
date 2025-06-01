@@ -9,6 +9,23 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       monacoCdn: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs',
+      remoteFS: true
+    }
+  },
+
+  $development: {
+    runtimeConfig: {
+      public: {
+        a2aUrl: 'http://192.168.31.69:30030',
+      }
+    }
+  },
+
+  $production: {
+    runtimeConfig: {
+      public: {
+        a2aUrl: '',
+      }
     }
   },
 

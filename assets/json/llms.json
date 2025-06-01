@@ -23,19 +23,19 @@
       },
       {
         "provider": "vertex-ai",
-        "model": "gemini-1.5-flash-002"
-      },
-      {
-        "provider": "vertex-ai",
         "model": "gemini-1.5-pro-001"
       },
       {
         "provider": "vertex-ai",
-        "model": "gemini-1.5-pro-002"
+        "model": "gemini-2.0-flash-001"
       },
       {
         "provider": "vertex-ai",
-        "model": "gemini-2.0-flash-exp"
+        "model": "gemini-2.5-flash-preview-05-20"
+      },
+      {
+        "provider": "vertex-ai",
+        "model": "gemini-2.5-pro-preview-05-06"
       }
     ]
   },
@@ -131,11 +131,15 @@
     "models": [
       {
         "provider": "doubao",
-        "model": "Doubao-lite-32k"
+        "model": "doubao-lite-32k"
       },
       {
         "provider": "doubao",
-        "model": "Doubao-pro-32k"
+        "model": "doubao-pro-32k"
+      },
+      {
+        "provider": "doubao",
+        "model": "doubao-deepseek-chat"
       }
     ]
   },
@@ -145,11 +149,31 @@
     "models": [
       {
         "provider": "x-ai",
-        "model": "grok-beta"
+        "model": "grok-3"
       },
       {
         "provider": "x-ai",
         "model": "grok-2"
+      }
+    ]
+  },
+  {
+    "name": "baidu-bce",
+    "desc": "文心一言",
+    "models": [
+      {
+        "provider": "baidu-bce",
+        "model": "ernie-4.5-turbo-32k"
+      }
+    ]
+  },
+  {
+    "name": "hunyuan",
+    "desc": "混元",
+    "models": [
+      {
+        "provider": "hunyuan",
+        "model": "hunyuan-turbos-latest"
       }
     ]
   },

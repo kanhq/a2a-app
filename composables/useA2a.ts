@@ -22,6 +22,30 @@ class A2AServices {
     return await res.json()
   }
 
+  async admin(req: any, gateway: A2AConfig): Promise<any> {
+    const headers: any = {
+      'Content-Type': 'application/json',
+    }
+    if (gateway.token) {
+      headers['Authorization'] = `Bearer ${gateway.token}`
+    }
+    const url = `${gateway.url}/admin`
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(req)
+    })
+    if (!res.ok) {
+      const text = await res.text()
+      throw new Error(`Error: ${res.status} ${res.statusText} - ${text}`)
+    }
+    const data = await res.json()
+    if (data.error) {
+      throw new Error(`Error: ${data.error}`)
+    }
+    return data
+  }
+
   async* writeCode(req: any, gateway: A2AConfig) {
     const headers: any = {
       'Content-Type': 'application/json',

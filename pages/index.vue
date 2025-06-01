@@ -385,7 +385,7 @@ async function onRunDirect() {
   }
   let req = {
     script: toRaw(doc.value.source),
-    config: await config.value.mergeConfigs(),
+    //config: await config.value.mergeConfigs(),
     params: toRaw(doc.value.params),
   }
   const resp = await a2a.value.runJSON(req, gateway)
