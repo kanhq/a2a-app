@@ -16,7 +16,7 @@
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@primevue/forms": "^4.3.4",
     "@primevue/themes": "^4.3.4",
-    "caniuse-lite": "^1.0.30001718",
+    "caniuse-lite": "^1.0.30001720",
     "dexie": "^4.0.11",
     "nuxt": "^3.17.4",
     "primeicons": "^7.0.0",

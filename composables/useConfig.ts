@@ -33,11 +33,11 @@ const dbConf: ActionConfig = {
     }
     return {
       name: row.name,
-      url: url,
+      value: url,
     }
   },
   deserialize: (row: any) => {
-    const url = new URL(row.url)
+    const url = new URL(row.value)
     return {
       name: row.name,
       kind: url.protocol.replace(':', ''),
@@ -147,7 +147,7 @@ const mailConf: ActionConfig = {
       "name": row.name,
       "imap": {
         "encryption": "tls",
-        "host": imap[-1],
+        "host": imap[0],
         "port": imap.length > 0 ? parseInt(imap[1]) || 993 : 993,
         "login": row.address,
         "passwd": {
@@ -156,7 +156,7 @@ const mailConf: ActionConfig = {
       },
       "smtp": {
         "encryption": "tls",
-        "host": smtp[-1],
+        "host": smtp[0],
         "port": smtp.length > 0 ? parseInt(smtp[1]) || 587 : 587,
         "login": row.address,
         "passwd": {
@@ -202,7 +202,7 @@ const notifyConf: ActionConfig = {
   name: 'notify',
   columns: [
     { field: 'name', label: '名称', style: "width:9rem" },
-    { field: 'url', label: 'WebHook URL', style: "width:9rem" },
+    { field: 'value', label: 'WebHook URL', style: "width:9rem" },
   ],
 }
 

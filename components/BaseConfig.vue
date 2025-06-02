@@ -35,7 +35,7 @@
       </template>
       <template #body="{ data }">
         <template v-if="col.options">
-          <span>{{ col.options.find((opt: any) => opt.value === data[col.field])?.label || data[col.field] }}</span>
+          <span>{{col.options.find((opt: any) => opt.value === data[col.field])?.label || data[col.field]}}</span>
         </template>
         <template v-else-if="col.password">
           <span>******</span>
@@ -73,25 +73,45 @@ onMounted(async () => {
 })
 
 async function loadRows() {
-  const fileName = `/config/${props.config.name}.json`
-  const data = (await loadFileContent(fileName)) as any[] || []
+  const fileName = `/conf/${props.config.name}.json`
+  const data: Record<string, any> = (await loadFileContent(fileName)) as any || {}
   const deSerFunc = props.config.deserialize
-  if (deSerFunc) {
-    rows.value = data.map(r => deSerFunc(r, props.config))
-  } else {
-    rows.value = data
-  }
+  const records = Object.entries(data).map(([key, value]) => {
+    let record: any = {}
+    if (typeof value !== 'object') {
+      record = { name: key, value }
+    } else {
+      record = { ...value, name: key }
+    }
+    if (deSerFunc) {
+      record = deSerFunc(record, props.config)
+    }
+    return record
+  })
+  rows.value = records
 }
 
 async function saveRows() {
-  const fileName = `/config/${props.config.name}.json`
+  const fileName = `/conf/${props.config.name}.json`
   const serFunc = props.config.serialize
   let data = rows.value.map(toRaw)
   if (serFunc) {
     data = data.map(r => serFunc(r, props.config))
   }
-  console.log('saveRows', fileName, data)
-  await saveFile(fileName, toRaw(data))
+  const m = data.reduce((acc: Record<string, any>, row: any) => {
+    if (!row.name) {
+      console.warn('Row without name:', row)
+      return acc
+    }
+    if (Object.keys(row).length === 2 && row.value !== undefined) {
+      acc[row.name] = row.value
+    } else {
+      acc[row.name] = row
+    }
+    return acc
+  }, {})
+  console.log('saveRows', fileName, m)
+  await saveFile(fileName, toRaw(m))
 }
 
 function onNewRow() {
