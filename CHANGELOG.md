@@ -1,6 +1,6 @@
 # ChangeLog
 
-## [v0.0.4] - 2024-12-13
+## [v0.0.4] - 2025-06-03
 
 - ADD: use 'A2A' workspace service to manage workspaces
 
