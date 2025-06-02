@@ -208,7 +208,7 @@ function extractCode(code: string, usage: any) {
 
 async function generateCode() {
   const gateway = sysConfig.value.a2a;
-  if (!gateway?.url || !gateway.model?.model || !gateway.model?.provider) {
+  if (!gateway.model?.model || !gateway.model?.provider) {
 
     confirm.require({
       message: '大模型配置不完整，请先配置大模型',
@@ -362,27 +362,27 @@ async function onRun() {
 
 async function onRunDirect() {
   const gateway = sysConfig.value.a2a
-  if (!gateway.url) {
-    confirm.require({
-      message: 'A2A配置不完整，请先配置A2A',
-      header: 'Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-      rejectProps: {
-        label: '取消',
-        severity: 'secondary',
-        outlined: true
-      },
-      acceptProps: {
-        label: '去配置'
-      },
-      accept: () => {
-        useRouter().push({ name: 'settings' })
-      },
-      reject: () => {
-      }
-    });
-    return
-  }
+  // if (!gateway.url) {
+  //   confirm.require({
+  //     message: 'A2A配置不完整，请先配置A2A',
+  //     header: 'Confirmation',
+  //     icon: 'pi pi-exclamation-triangle',
+  //     rejectProps: {
+  //       label: '取消',
+  //       severity: 'secondary',
+  //       outlined: true
+  //     },
+  //     acceptProps: {
+  //       label: '去配置'
+  //     },
+  //     accept: () => {
+  //       useRouter().push({ name: 'settings' })
+  //     },
+  //     reject: () => {
+  //     }
+  //   });
+  //   return
+  // }
   let req = {
     script: toRaw(doc.value.source),
     //config: await config.value.mergeConfigs(),
