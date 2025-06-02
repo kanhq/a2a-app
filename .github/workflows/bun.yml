@@ -20,7 +20,7 @@ jobs:
       - run: bun install
       - run: bun run generate
       - name: Packing
-        run: zip ../a2a-app.zip *
+        run: zip -r ../a2a-app.zip *
         working-directory: .output/public
       - name: Release
         uses: softprops/action-gh-release@v2
