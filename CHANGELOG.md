@@ -1,5 +1,9 @@
 # ChangeLog
 
+## [v0.0.4] - 2024-12-13
+
+- ADD: use 'A2A' workspace service to manage workspaces
+
 ## [v0.0.3] - 2024-12-13
 
 - ADD: use `A2A's` write code service, instead of raw OpenAI's API
