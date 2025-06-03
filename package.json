@@ -20,7 +20,7 @@
     "dexie": "^4.0.11",
     "nuxt": "^3.17.4",
     "primeicons": "^7.0.0",
-    "primevue": "^4.3.4",
+    "primevue": "^4.3.5",
     "tailwindcss-primeui": "^0.3.4",
     "vue": "latest",
     "vue-router": "latest"
