@@ -110,7 +110,7 @@ async function saveRows() {
     }
     return acc
   }, {})
-  console.log('saveRows', fileName, m)
+  console.debug('saveRows', fileName, m)
   await saveFile(fileName, toRaw(m))
 }
 

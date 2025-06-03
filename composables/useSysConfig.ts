@@ -96,7 +96,7 @@ class SysConfigService {
   }
 
   saveSysConfig() {
-    console.log('saving sysConfig', this.sysConfig)
+    console.debug('saving sysConfig', this.sysConfig)
     localStorage.setItem('sysConfig', JSON.stringify(this.sysConfig))
   }
 }

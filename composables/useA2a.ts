@@ -59,6 +59,10 @@ class A2AServices {
       headers,
       body: JSON.stringify(req)
     })
+    if (!res.ok) {
+      const text = await res.text()
+      throw new Error(`Error: ${res.status} ${res.statusText} - ${text}`)
+    }
     const prefix = `// Written by Provider: ${req.provider || ''} Model: ${req.model || ''}`
     yield prefix
 

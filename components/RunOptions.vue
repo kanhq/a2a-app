@@ -3,7 +3,7 @@
   <DataTable :value="rows" dataKey="id">
     <template #header>
       <div class="flex items-center justify-between">
-        <span class="flex-auto"/>
+        <span class="flex-auto" />
         <Button icon="pi pi-file-plus" severity="secondary" @click="onNewText()" text />
         <Button icon="pi pi-folder-plus" severity="secondary" @click="onNewFile()" text />
       </div>
@@ -24,7 +24,7 @@
           <template v-if="data.value.name">
             <span>{{ data.value.name }}</span>
           </template>
-          <input type="file" :id="`f-${data.id}`" @change="onFileUpload"/>
+          <input type="file" :id="`f-${data.id}`" @change="onFileUpload" />
         </template>
         <template v-else>
           <InputText v-model="data.value" />
@@ -60,7 +60,7 @@ onBeforeUnmount(() => {
   model.value = value
 });
 
-function buildRows(value: any) : Row[]  {
+function buildRows(value: any): Row[] {
   if (!value) {
     return [];
   }
@@ -76,18 +76,18 @@ function buildRows(value: any) : Row[]  {
   return rows;
 }
 
-function nextId() : string {
+function nextId(): string {
   const maxId = rows.value
-  .map(row => {
-    const n = parseInt(row.id.substring(2));
-    console.log('nextId', row.id, n);
-    return isNaN(n) ? 0 : n;
-  })
-  .reduce((a, b) => Math.max(a, b), 0);
+    .map(row => {
+      const n = parseInt(row.id.substring(2));
+      console.debug('nextId', row.id, n);
+      return isNaN(n) ? 0 : n;
+    })
+    .reduce((a, b) => Math.max(a, b), 0);
   const id = (maxId + 1).toFixed(0).padStart(3, '0');
   return id
 }
-  
+
 function onNewText() {
   const id = nextId();
   rows.value.push({

@@ -251,25 +251,36 @@ async function generateCode() {
     name: doc.value.name,
   }
 
-  for await (const part of a2a.value.writeCode(req, sysConfig.value.a2a)) {
-    if (part.startsWith('//usage:')) {
-      usage = JSON.parse(part.substring(8))
-    } else {
-      if (!start) {
-        code = part
-        start = true
+  try {
+
+    for await (const part of a2a.value.writeCode(req, sysConfig.value.a2a)) {
+      if (part.startsWith('//usage:')) {
+        usage = JSON.parse(part.substring(8))
       } else {
-        code += part
+        if (!start) {
+          code = part
+          start = true
+        } else {
+          code += part
+        }
       }
+      doc.value.source = extractCode(code, usage)
     }
-    doc.value.source = extractCode(code, usage)
+    toast.add({
+      severity: 'success',
+      summary: '代码生成成功',
+      detail: '您可以点击<运行>按钮来运行代码',
+      life: 3000,
+    })
+  } catch (err: any) {
+    toast.add({
+      severity: 'error',
+      summary: '代码生成失败',
+      detail: err.message || '请检查大模型配置是否正确',
+      life: 3000,
+    })
+    doc.value.source = '// 代码生成失败，请检查大模型配置是否正确'
   }
-  toast.add({
-    severity: 'success',
-    summary: '代码生成成功',
-    detail: '您可以点击<运行>按钮来运行代码',
-    life: 3000,
-  })
 }
 
 async function onFileOpen(name: string, event: any) {
