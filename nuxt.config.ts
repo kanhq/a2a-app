@@ -43,7 +43,7 @@ export default defineNuxtConfig({
 
   logLevel: 'verbose',
 
-  modules: ["@primevue/nuxt-module", '@nuxtjs/tailwindcss'],
+  modules: ["@primevue/nuxt-module", '@nuxtjs/tailwindcss', '@nuxtjs/i18n'],
   primevue: {
     autoImport: true,
     options: {
@@ -53,4 +53,14 @@ export default defineNuxtConfig({
     },
     loadStyles: false
   },
+  i18n: {
+    defaultLocale: 'en',
+    locales: [
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'zh_cn', name: '中文', file: 'zh-cn.json' }
+    ],
+    bundle: {
+      optimizeTranslationDirective: false,
+    }
+  }
 })

@@ -11,23 +11,23 @@
             <InputIcon>
               <i class="pi pi-search" />
             </InputIcon>
-            <InputText v-model="filters['global'].value" placeholder="查找" />
+            <InputText v-model="filters['global'].value" :placeholder="$t('placeholder.search')" />
           </IconField>
         </div>
       </div>
     </template>
     <template #empty>
       <div class="p-4 text-center">
-        <span class="text-lg">没有数据</span>
+        <span class="text-lg">{{ $t('label.no_data') }}</span>
       </div>
     </template>
     <Column selectionMode="multiple" headerStyle="width: 1rem;background: var(--p-surface-200)"></Column>
-    <Column v-for="col in config.columns" :key="col.field" :field="col.field" :header="col.label" :style="col.style"
+    <Column v-for="col in config.columns" :key="col.field" :field="col.field" :header="$t(col.label)" :style="col.style"
       :frozen="col.frozen" headerStyle="background: var(--p-surface-200)">
       <template #editor="{ data, field }">
         <template v-if="col.options">
-          <Select v-model="data[field]" :options="col.options" optionLabel="label" optionValue="value" placeholder=""
-            class="w-full " :editable="!col.onlyOptions" />
+          <Select v-model="data[field]" :options="col.options" :optionLabel="i18OptionLabel" optionValue="value"
+            placeholder="" class="w-full " :editable="!col.onlyOptions" />
         </template>
         <template v-else>
           <InputText v-model="data[field]" class="w-full" />
@@ -55,6 +55,7 @@
 <script setup lang="ts">
 import { FilterMatchMode } from '@primevue/core/api';
 
+const { t } = useI18n()
 
 const props = defineProps<{
   config: ActionConfig
@@ -68,27 +69,37 @@ const filters = reactive({
 })
 const openEditDlg = ref(false)
 
+function i18OptionLabel(option: any) {
+  return t(option.label)
+}
+
 onMounted(async () => {
   await loadRows()
 })
 
 async function loadRows() {
-  const fileName = `/conf/${props.config.name}.json`
-  const data: Record<string, any> = (await loadFileContent(fileName)) as any || {}
-  const deSerFunc = props.config.deserialize
-  const records = Object.entries(data).map(([key, value]) => {
-    let record: any = {}
-    if (typeof value !== 'object') {
-      record = { name: key, value }
-    } else {
-      record = { ...value, name: key }
-    }
-    if (deSerFunc) {
-      record = deSerFunc(record, props.config)
-    }
-    return record
-  })
-  rows.value = records
+  try {
+    const fileName = `/conf/${props.config.name}.json`
+    const data: Record<string, any> = (await loadFileContent(fileName)) as any || {}
+    const deSerFunc = props.config.deserialize
+    const records = Object.entries(data).map(([key, value]) => {
+      let record: any = {}
+      if (typeof value !== 'object') {
+        record = { name: key, value }
+      } else {
+        record = { ...value, name: key }
+      }
+      if (deSerFunc) {
+        record = deSerFunc(record, props.config)
+      }
+      return record
+    })
+    rows.value = records
+  } catch (e) {
+    console.error('Error loading rows:', e)
+    rows.value = []
+  }
+  console.debug('loadRows', props.config.name, rows.value)
 }
 
 async function saveRows() {

@@ -2,7 +2,7 @@
   <div class="w-full">
     <Tabs value="common">
       <TabList>
-        <Tab v-for="config in allConfigs" :value=config.name>{{ config.label }}</Tab>
+        <Tab v-for="config in allConfigs" :value=config.name>{{ $t(config.label) }}</Tab>
       </TabList>
 
       <TabPanels>

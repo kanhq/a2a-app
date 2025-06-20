@@ -25,6 +25,7 @@ export type SysConfig = {
   //llm: LlmGateway
   a2a: A2AConfig
   project: ProjectConfig
+  locale?: string
 }
 
 export type A2APoject = {
@@ -85,6 +86,15 @@ class SysConfigService {
   get project() {
     return this.sysConfig.project
   }
+
+  get locale(): string {
+    const l = (this.sysConfig.locale || navigator.language || 'en').toLowerCase()
+    if (l.startsWith('en')) {
+      return 'en'
+    }
+    return l
+  }
+
 
   loadSysConfig() {
     const sysConfig = localStorage.getItem('sysConfig')

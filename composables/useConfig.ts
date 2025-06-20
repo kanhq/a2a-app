@@ -1,23 +1,23 @@
 
 const commonConf: ActionConfig = {
-  label: '通用配置',
+  label: 'label.common_config',
   name: 'common',
   columns: [
-    { field: 'name', label: '名称', style: "width:9rem" },
-    { field: 'value', label: '值', style: "width:9rem" },
+    { field: 'name', label: 'label.name', style: "width:9rem" },
+    { field: 'value', label: 'label.value', style: "width:9rem" },
   ],
 }
 
 const dbConf: ActionConfig = {
-  label: '数据库配置',
+  label: 'label.database_config',
   name: 'db',
   columns: [
-    { field: 'name', label: '名称', style: "width:9rem" },
-    { field: 'kind', label: '类型', style: "width:9rem", options: [{ label: 'PostgreSQL', value: 'pgsql' }, { label: 'MySQL', value: 'mysql' }, { label: 'SQLite', value: 'sqlite' }], onlyOptions: true },
-    { field: 'host', label: '地址:端口', style: "width:9rem" },
-    { field: 'db', label: '数据库', style: "width:9rem" },
-    { field: 'user', label: '用户名', style: "width:9rem" },
-    { field: 'password', label: '密码', style: "width:9rem", password: true },
+    { field: 'name', label: 'label.name', style: "width:9rem" },
+    { field: 'kind', label: 'label.type', style: "width:9rem", options: [{ label: 'label.pgsql', value: 'pgsql' }, { label: 'label.mysql', value: 'mysql' }, { label: 'label.sqlite', value: 'sqlite' }], onlyOptions: true },
+    { field: 'host', label: 'label.host_port', style: "width:9rem" },
+    { field: 'db', label: 'label.database', style: "width:9rem" },
+    { field: 'user', label: 'label.user', style: "width:9rem" },
+    { field: 'password', label: 'label.password', style: "width:9rem", password: true },
   ],
   serialize: (row: any) => {
     let url = ''
@@ -50,21 +50,21 @@ const dbConf: ActionConfig = {
 }
 
 const ossConf: ActionConfig = {
-  label: '对象存储配置',
+  label: 'label.oss_config',
   name: 'oss',
   columns: [
-    { field: 'name', label: '名称', style: "width:9rem" },
+    { field: 'name', label: 'label.name', style: "width:9rem" },
     {
-      field: 'kind', label: '服务商', style: "width:9rem",
+      field: 'kind', label: 'label.provider', style: "width:9rem",
       options: [
-        { label: '阿里云OSS', value: 'oss' },
-        { label: 'AWS S3', value: 's3' },
+        { label: 'label.oss_aliyun', value: 'oss' },
+        { label: 'label.aws_s3', value: 's3' },
       ]
     },
-    { field: 'bucket', label: 'Bucket', style: "width:9rem" },
-    { field: 'endpoint', label: '接入点', style: "width:9rem" },
-    { field: 'user', label: '用户名', style: "width:9rem" },
-    { field: 'password', label: '密码', style: "width:9rem" },
+    { field: 'bucket', label: 'label.bucket', style: "width:9rem" },
+    { field: 'endpoint', label: 'label.endpoint', style: "width:9rem" },
+    { field: 'user', label: 'label.user', style: "width:9rem" },
+    { field: 'password', label: 'label.password', style: "width:9rem" },
   ],
   //TODO: serialize/deserialize
   serialize: (row: any, _this?: any) => {
@@ -131,14 +131,14 @@ const ossConf: ActionConfig = {
 }
 
 const mailConf: ActionConfig = {
-  label: '邮件配置',
+  label: 'label.mail_config',
   name: 'mail',
   columns: [
-    { field: 'name', label: '名称', style: "width:9rem" },
-    { field: 'imap', label: 'IMAP地址:端口', style: "width:9rem" },
-    { field: 'smtp', label: 'SMTP地址:端口', style: "width:9rem" },
-    { field: 'address', label: '邮箱', style: "width:9rem" },
-    { field: 'password', label: '密码', style: "width:9rem", password: true },
+    { field: 'name', label: 'label.name', style: "width:9rem" },
+    { field: 'imap', label: 'label.imap', style: "width:9rem" },
+    { field: 'smtp', label: 'label.smtp', style: "width:9rem" },
+    { field: 'address', label: 'label.email', style: "width:9rem" },
+    { field: 'password', label: 'label.password', style: "width:9rem", password: true },
   ],
   serialize: (row: any) => {
     const imap = row.imap.split(':')
@@ -177,32 +177,33 @@ const mailConf: ActionConfig = {
 }
 
 const llmConf: ActionConfig = {
-  label: '大模型配置',
+  label: 'label.llm_config',
   name: 'llm',
   columns: [
-    { field: 'name', label: '名称', style: "width:9rem" },
-    { field: 'url', label: 'URL', style: "width:9rem" },
+    { field: 'name', label: 'label.name', style: "width:9rem" },
+    { field: 'url', label: 'label.url', style: "width:9rem" },
     {
-      field: 'provider', label: '服务商', style: "width:9rem",
+      field: 'provider', label: 'label.provider', style: "width:9rem",
       options: [
-        { label: 'Google VertexAI', value: 'vertex-ai' },
-        { label: 'Microsoft Azure OpenAI', value: 'azure-openai' },
-        { label: 'AWS Bedrock', value: 'bedrock' },
-        { label: '智谱清言', value: 'zhipu' },
-        { label: '通义千问', value: 'qwen' },
+        { label: 'label.vertex_ai', value: 'vertex-ai' },
+        { label: 'label.azure_openai', value: 'azure-openai' },
+        { label: 'label.aws_bedrock', value: 'bedrock' },
+        { label: 'label.zhipu', value: 'zhipu' },
+        { label: 'label.qwen', value: 'qwen' },
+        { label: 'label.deepseek', value: 'deepseek' },
       ]
     },
-    { field: 'model', label: '模型', style: "width:9rem" },
-    { field: 'key', label: '密钥', style: "width:9rem", password: true },
+    { field: 'model', label: 'label.model', style: "width:9rem" },
+    { field: 'key', label: 'label.password', style: "width:9rem", password: true },
   ],
 }
 
 const notifyConf: ActionConfig = {
-  label: '通知配置',
+  label: 'label.notify_config',
   name: 'notify',
   columns: [
-    { field: 'name', label: '名称', style: "width:9rem" },
-    { field: 'value', label: 'WebHook URL', style: "width:9rem" },
+    { field: 'name', label: 'label.name', style: "width:9rem" },
+    { field: 'value', label: 'label.webhook_url', style: "width:9rem" },
   ],
 }
 

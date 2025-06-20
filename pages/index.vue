@@ -41,80 +41,6 @@
 import { ref, shallowRef } from 'vue'
 import type { editor as MonacoEditor } from 'monaco-editor'
 
-const promptEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
-  automaticLayout: true,
-  formatOnType: true,
-  formatOnPaste: true,
-  wordWrap: 'on',
-  // fontSize: 9,
-  // lineHeight: 20,
-  minimap: {
-    enabled: false,
-  },
-  placeholder: '在此输入业务逻辑后, 按Ctrl+Enter生成代码',
-  language: 'markdown',
-}
-
-const sourceEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
-  automaticLayout: true,
-  formatOnType: true,
-  formatOnPaste: true,
-  wordWrap: 'on',
-  // fontSize: 10,
-  // lineHeight:20,
-  minimap: {
-    enabled: false,
-  },
-  readOnly: false,
-  placeholder: '点击上面的<编写>按钮来生成应用代码',
-  language: 'javascript',
-}
-
-const outputEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
-  automaticLayout: true,
-  formatOnType: true,
-  formatOnPaste: true,
-  wordWrap: 'on',
-  minimap: {
-    enabled: false,
-  },
-  readOnly: true,
-  placeholder: '运行结果',
-  language: 'json',
-}
-const promptEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
-const sourceEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
-const outputEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
-const handlePromptEditorMount = (editor: MonacoEditor.IStandaloneCodeEditor) => {
-
-  //console.log('handlePromptEditorMount, ', KeyMod.CtrlCmd, KeyMod.Shift, KeyMod.Alt, KeyMod.WinCtrl)
-  editor.addAction({
-    id: 'a2a-code',
-    label: '编写代码',
-    keybindings: [MonacoKeys.KeyModCtrlCmd | MonacoKeys.Enter],
-    run: () => generateCode(),
-  })
-
-  editor.addAction({
-    id: 'a2a-save',
-    label: '保存文件',
-    keybindings: [MonacoKeys.KeyModCtrlCmd | MonacoKeys.KeyS],
-    run: () => onFileSave(),
-  })
-
-  editor.addAction({
-    id: 'a2a-run',
-    label: '运行',
-    keybindings: [MonacoKeys.KeyModCtrlCmd | MonacoKeys.KeyR],
-    run: () => onRunDirect(),
-  })
-
-  promptEditor.value = editor
-}
-const handleSourceEditorMount = (editorInstance: any) => (sourceEditor.value = editorInstance)
-const handleOutputEditorMount = (editorInstance: any) => (outputEditor.value = editorInstance)
-
-
 const doc = ref<A2APoject>({
   name: UNTITLED_PROJECT,
   prompt: '',
@@ -133,6 +59,84 @@ const confirm = useConfirm();
 const config = useConfig()
 const toast = useToast()
 const a2a = useA2a()
+const primevue = usePrimeVue()
+const i18n = useI18n()
+
+const promptEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
+  automaticLayout: true,
+  formatOnType: true,
+  formatOnPaste: true,
+  wordWrap: 'on',
+  // fontSize: 9,
+  // lineHeight: 20,
+  minimap: {
+    enabled: false,
+  },
+  placeholder: i18n.t('placeholder.editor_prompt'),
+  language: 'markdown',
+}
+
+const sourceEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
+  automaticLayout: true,
+  formatOnType: true,
+  formatOnPaste: true,
+  wordWrap: 'on',
+  // fontSize: 10,
+  // lineHeight:20,
+  minimap: {
+    enabled: false,
+  },
+  readOnly: false,
+  placeholder: i18n.t('placeholder.editor_source'),
+  language: 'javascript',
+}
+
+const outputEditorOptions: MonacoEditor.IStandaloneEditorConstructionOptions = {
+  automaticLayout: true,
+  formatOnType: true,
+  formatOnPaste: true,
+  wordWrap: 'on',
+  minimap: {
+    enabled: false,
+  },
+  readOnly: true,
+  placeholder: i18n.t('placeholder.editor_log'),
+  language: 'json',
+}
+const promptEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
+const sourceEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
+const outputEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor>()
+const handlePromptEditorMount = (editor: MonacoEditor.IStandaloneCodeEditor) => {
+
+  //console.log('handlePromptEditorMount, ', KeyMod.CtrlCmd, KeyMod.Shift, KeyMod.Alt, KeyMod.WinCtrl)
+  editor.addAction({
+    id: 'a2a-code',
+    label: i18n.t('write_code'),
+    keybindings: [MonacoKeys.KeyModCtrlCmd | MonacoKeys.Enter],
+    run: () => generateCode(),
+  })
+
+  editor.addAction({
+    id: 'a2a-save',
+    label: i18n.t('save_file'),
+    keybindings: [MonacoKeys.KeyModCtrlCmd | MonacoKeys.KeyS],
+    run: () => onFileSave(),
+  })
+
+  editor.addAction({
+    id: 'a2a-run',
+    label: i18n.t('run'),
+    keybindings: [MonacoKeys.KeyModCtrlCmd | MonacoKeys.KeyR],
+    run: () => onRunDirect(),
+  })
+
+  promptEditor.value = editor
+}
+const handleSourceEditorMount = (editorInstance: any) => (sourceEditor.value = editorInstance)
+const handleOutputEditorMount = (editorInstance: any) => (outputEditor.value = editorInstance)
+
+
+
 
 watch(eventBus, async (event) => {
   switch (event.command) {
@@ -159,15 +163,24 @@ watch(eventBus, async (event) => {
 })
 
 onMounted(async () => {
+  const localeId = i18n.locale.value
+  const messages = i18n.messages.value
+  const primevueLocale = toRaw(messages[localeId].primevue || {}) as any
+  primevue.config.locale = primevueLocale
   const name = sysConfig.value.project.lastProjectName
-  const data = await loadFileContent(name)
-  if (data) {
-    doc.value = {
-      name: name,
-      prompt: data.prompt,
-      source: data.source,
-      params: data.params,
+  try {
+    const data = await loadFileContent(name)
+    if (data) {
+      doc.value = {
+        name: name,
+        prompt: data.prompt,
+        source: data.source,
+        params: data.params,
+      }
     }
+  } catch (err) {
+    console.error('Error loading file content:', err)
+    doc.value = { name: UNTITLED_PROJECT, prompt: '', source: '', params: {} }
   }
 })
 
@@ -211,16 +224,16 @@ async function generateCode() {
   if (!gateway.model?.model || !gateway.model?.provider) {
 
     confirm.require({
-      message: '大模型配置不完整，请先配置大模型',
-      header: 'Confirmation',
+      message: i18n.t('confirm.llm_missing'),
+      header: i18n.t('confirm.config_error'),
       icon: 'pi pi-exclamation-triangle',
       rejectProps: {
-        label: '取消',
+        label: i18n.t('label.cancel'),
         severity: 'secondary',
         outlined: true
       },
       acceptProps: {
-        label: '去配置'
+        label: i18n.t('label.go_config')
       },
       accept: () => {
         useRouter().push({ name: 'settings' })
@@ -233,8 +246,8 @@ async function generateCode() {
   if (doc.value.prompt.trim() === '') {
     toast.add({
       severity: 'error',
-      summary: '业务逻辑为空',
-      detail: '请输入业务逻辑, 再生成代码',
+      summary: i18n.t('toast.logic_empty'),
+      detail: i18n.t('toast.logic_empty_detail'),
       life: 3000,
     })
     return
@@ -268,18 +281,18 @@ async function generateCode() {
     }
     toast.add({
       severity: 'success',
-      summary: '代码生成成功',
-      detail: '您可以点击<运行>按钮来运行代码',
+      summary: i18n.t('toast.code_generated'),
+      detail: i18n.t('toast.code_generated_detail'),
       life: 3000,
     })
   } catch (err: any) {
     toast.add({
       severity: 'error',
-      summary: '代码生成失败',
-      detail: err.message || '请检查大模型配置是否正确',
+      summary: i18n.t('toast.code_generation_failed'),
+      detail: err.message || i18n.t('toast.code_generation_failed_detail'),
       life: 3000,
     })
-    doc.value.source = '// 代码生成失败，请检查大模型配置是否正确'
+    doc.value.source = i18n.t('toast.code_generation_failed_detail')
   }
 }
 
@@ -315,16 +328,16 @@ async function onFileSave(autoSave = false) {
   if (!autoSave && doc.value.name === UNTITLED_PROJECT) {
     confirm.require({
       group: 'inputRequired',
-      message: '请输入文件名',
-      header: '保存文件',
+      message: i18n.t('confirm.save_message'),
+      header: i18n.t('confirm.save_header'),
       icon: 'pi pi-exclamation-triangle',
       rejectProps: {
-        label: '取消',
+        label: i18n.t('label.cancel'),
         severity: 'secondary',
         outlined: true
       },
       acceptProps: {
-        label: '确定'
+        label: i18n.t('label.confirm')
       },
       accept: async () => {
         if (!inputDlgResult.value) {
@@ -354,16 +367,16 @@ async function onFileSave(autoSave = false) {
 async function onRun() {
   confirm.require({
     group: 'runConfirm',
-    message: '请选择运行参数',
-    header: '设置运行参数 params',
+    message: i18n.t('confirm.run_message'),
+    header: i18n.t('confirm.run_header'),
     icon: 'pi pi-exclamation-triangle',
     rejectProps: {
-      label: '取消',
+      label: i18n.t('label.cancel'),
       severity: 'secondary',
       outlined: true
     },
     acceptProps: {
-      label: '确定'
+      label: i18n.t('label.confirm')
     },
     accept: onRunDirect,
     reject: () => {
